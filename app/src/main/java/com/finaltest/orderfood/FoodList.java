@@ -3,6 +3,7 @@ package com.finaltest.orderfood;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +25,9 @@ public class FoodList extends AppCompatActivity {
         foodList = database.getReference("Foods");
 
         recyclerView = findViewById(R.id.recycler_food);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
     }
 
