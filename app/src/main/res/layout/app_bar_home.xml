@@ -30,9 +30,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@android:color/white"
-        app:srcCompat="@drawable/ic_shopping_cart_black_24dp"
-        tools:ignore="VectorDrawableCompat"
-        android:theme="@style/MyMaterialTheme"/>
+        app:srcCompat="@drawable/ic_baseline_shopping_cart_24"
+        tools:ignore="VectorDrawableCompat" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
