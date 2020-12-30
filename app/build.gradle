@@ -58,6 +58,8 @@ dependencies {
     //Part 5
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    //Part 6
+    implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
 
 
 }
