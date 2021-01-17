@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.finaltest.orderfood.Common.Common;
 import com.finaltest.orderfood.Interface.ItemClickListener;
 import com.finaltest.orderfood.Model.Food;
 import com.finaltest.orderfood.ViewHolder.FoodViewHolder;
@@ -63,7 +64,12 @@ public class FoodList extends AppCompatActivity {
         if(getIntent()!=null)
             categoryID=getIntent().getStringExtra("CategoryID");
         if(!categoryID.isEmpty() && categoryID!=null) {
-            loadListFood(categoryID);
+            if (Common.isConnectedToInternet(getBaseContext())) {
+                loadListFood(categoryID);
+            } else {
+                Toast.makeText(FoodList.this, "Please check your connection !!", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         //Search
         materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);

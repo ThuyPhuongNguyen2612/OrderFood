@@ -89,7 +89,12 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         layoutManager = new LinearLayoutManager(this);
         recycler_menu.setLayoutManager(layoutManager);
 
-        loadMenu();
+        if (Common.isConnectedToInternet(this)) {
+            loadMenu();
+        } else {
+            Toast.makeText(this, "Please check your connection !!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         //Register Service
         Intent service = new Intent(Home.this, ListenOrder.class);
