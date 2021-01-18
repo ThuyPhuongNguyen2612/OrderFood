@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ import com.finaltest.orderfood.Model.Request;
 import com.finaltest.orderfood.ViewHolder.CartAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -82,13 +84,13 @@ public class Cart extends AppCompatActivity {
         alertDialog.setTitle("One more step !");
         alertDialog.setMessage("Enter your address: ");
 
-        final EditText edtAddress = new EditText(Cart.this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View order_address_comment = inflater.inflate(R.layout.order_address_comment,null);
 
-        edtAddress.setLayoutParams(lp);
-        alertDialog.setView(edtAddress);//Add edit Text to alert dialog
+        final MaterialEditText edtAddress = (MaterialEditText) order_address_comment.findViewById(R.id.edtAddress);
+        final MaterialEditText edtComment = (MaterialEditText) order_address_comment.findViewById(R.id.edtComment);
+
+        alertDialog.setView(order_address_comment);
         alertDialog.setIcon(R.drawable.ic_baseline_shopping_cart_24);
         alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
@@ -97,7 +99,8 @@ public class Cart extends AppCompatActivity {
                 Request request = new Request(Common.currentUser.getPhone(),
                         Common.currentUser.getName(),
                         edtAddress.getText().toString(),
-                        txtTotalPrice.getText().toString(),
+                        txtTotalPrice.getText().toString(),"0",
+                        edtComment.getText().toString(),
                         cart);
 
                 //Submit to Firebase
