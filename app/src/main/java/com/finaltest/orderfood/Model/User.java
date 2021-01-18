@@ -1,19 +1,19 @@
 package com.finaltest.orderfood.Model;
 
 public class User {
-    private String Name;
-    private String Password;
-    private String Phone;
-    private String IsStaff;
+    private String name;
+    private String password;
+    private String phone;
+    private String isStaff;
     private String secureCode;
 
     public User() {
     }
 
     public User(String name, String password, String secureCode) {
-        Name = name;
-        Password = password;
-        IsStaff = "false";
+        this.name = name;
+        this.password = password;
+        isStaff = "false";
         this.secureCode = secureCode;
     }
 
@@ -26,34 +26,34 @@ public class User {
     }
 
     public String getIsStaff() {
-        return IsStaff;
+        return isStaff;
     }
 
     public void setIsStaff(String isStaff) {
-        IsStaff = isStaff;
+        this.isStaff = isStaff;
     }
 
     public String getPhone() {
-        return Phone;
+        return phone;
     }
 
     public void setPhone(String phone) {
-        Phone = phone;
+        this.phone = phone;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 }

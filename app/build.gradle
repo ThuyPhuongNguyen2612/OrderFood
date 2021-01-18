@@ -68,5 +68,8 @@ dependencies {
     //Part 20
     implementation 'com.stepstone.apprating:app-rating:2.0.0'
 
+    //Part 25
+    implementation 'com.github.d-max:spots-dialog:0.7@aar'
+//
 }
 apply plugin : 'com.google.gms.google-services'
