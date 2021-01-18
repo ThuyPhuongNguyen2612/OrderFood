@@ -49,15 +49,32 @@
             app:met_singleLineEllipsis="true"
             />
 
-        <CheckBox
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:id="@+id/ckbRemember"
-            android:text="Remember me"
-            android:textColor="@android:color/white"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:buttonTint="@android:color/white"/>
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <CheckBox
+                android:gravity="center_vertical"
+                android:id="@+id/ckbRemember"
+                android:text="Remember me"
+                android:textColor="@android:color/white"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:buttonTint="@android:color/white"/>
+            
+            <TextView
+                android:id="@+id/txtForgotPwd"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="@string/forgot_pwd"/>
+
+
+        </LinearLayout>
 
     </LinearLayout>
 

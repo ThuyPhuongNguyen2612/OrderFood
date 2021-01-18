@@ -14,4 +14,6 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="title_activity_home2">home2</string>
+
+    <string name="forgot_pwd"><u>Forgot Password?</u></string>
 </resources>
