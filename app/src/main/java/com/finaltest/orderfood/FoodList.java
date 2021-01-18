@@ -202,7 +202,7 @@ public class FoodList extends AppCompatActivity {
                             Toast.makeText(FoodList.this, ""+food.getName()+" was added to Favorites", Toast.LENGTH_SHORT).show();
                         } else {
                             localDB.removeFromFavorites(adapter.getRef(position).getKey());
-                            foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_24);
+                            foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                             Toast.makeText(FoodList.this, ""+food.getName()+" was removed from Favorites", Toast.LENGTH_SHORT).show();
                         }
                     }
