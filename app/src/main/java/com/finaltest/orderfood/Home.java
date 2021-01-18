@@ -228,7 +228,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 //check old password
                 if (edtPassword.getText().toString().equals(Common.currentUser.getPassword())) {
                     //check new password and repeat password
-                    if (edtPassword.getText().toString().equals(edtRepeatPassword.getText().toString())) {
+                    if (edtNewPassword.getText().toString().equals(edtRepeatPassword.getText().toString())) {
                         Map<String, Object> passwordUpdate = new HashMap<>();
                         passwordUpdate.put("password", edtNewPassword.getText().toString());
 
@@ -257,12 +257,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
             }
         });
 
-        builder.setPositiveButton("CANCEL", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
 
             }
         });
+        builder.show();
 
 
     }
