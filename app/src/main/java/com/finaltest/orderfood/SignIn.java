@@ -45,6 +45,7 @@ public class SignIn extends AppCompatActivity {
         edtPhone = (MaterialEditText) findViewById(R.id.edtPhone);
         btnSignIn = (Button) findViewById(R.id.btnSignIn);
         ckbRemember = (CheckBox) findViewById(R.id.ckbRemember);
+        txtForgotPwd = (TextView) findViewById(R.id.txtForgotPwd);
 
         //Init Paper
         Paper.init(this);
