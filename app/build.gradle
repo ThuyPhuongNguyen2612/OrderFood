@@ -61,6 +61,10 @@ dependencies {
     //Part 6
     implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
 
+    //Part 16
+    implementation 'io.paperdb:paperdb:2.1'
+    implementation 'com.github.rey5137:material:1.2.4'
+
 
 }
 apply plugin : 'com.google.gms.google-services'
