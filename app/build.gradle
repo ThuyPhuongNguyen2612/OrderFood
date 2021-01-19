@@ -10,6 +10,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -43,7 +44,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-database'
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'info.hoang8f:fbutton:1.0.5'
     implementation 'com.rengwuxian.materialedittext:library:2.1.4'
     implementation 'com.google.android.material:material:1.1.0'
@@ -70,6 +71,9 @@ dependencies {
 
     //Part 25
     implementation 'com.github.d-max:spots-dialog:0.7@aar'
-//
+
+    //Part 26
+    implementation 'com.facebook.android:facebook-share:[4,5)'
+
 }
 apply plugin : 'com.google.gms.google-services'

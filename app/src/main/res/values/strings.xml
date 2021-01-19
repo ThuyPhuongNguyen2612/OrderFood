@@ -16,4 +16,7 @@
     <string name="title_activity_home2">home2</string>
 
     <string name="forgot_pwd"><u>Forgot Password?</u></string>
+
+    <string name="facebook_app_id">451687389344012</string>
+    <string name="facebook_login_protocol_name">fb451687389344012</string>
 </resources>

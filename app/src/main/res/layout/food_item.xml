@@ -33,7 +33,15 @@
                 android:textSize="20sp"
                 android:gravity="center"
                 android:layout_width="0dp"
-                android:layout_weight="9"
+                android:layout_weight="8"
+                android:layout_height="wrap_content"/>
+
+            <ImageView
+                android:id="@+id/btnShare"
+                android:src="@drawable/ic_baseline_share_24"
+                app:tint="@android:color/white"
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
