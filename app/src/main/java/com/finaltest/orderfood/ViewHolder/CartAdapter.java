@@ -20,6 +20,7 @@ import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Interface.ItemClickListener;
 import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.R;
+import com.squareup.picasso.Picasso;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickList
 
     public TextView txt_cart_name, txt_price;
     public ElegantNumberButton btn_quantity;
+    public ImageView cart_image;
 
     private ItemClickListener itemClickListener;
 
@@ -42,6 +44,7 @@ class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickList
         txt_cart_name = (TextView) itemView.findViewById(R.id.cart_item_name);
         txt_price = (TextView) itemView.findViewById(R.id.cart_item_Price);
         btn_quantity = (ElegantNumberButton) itemView.findViewById(R.id.btn_quantity);
+        cart_image = (ImageView) itemView.findViewById(R.id.cart_image);
 
         itemView.setOnCreateContextMenuListener(this);
     }
@@ -79,8 +82,12 @@ public class CartAdapter extends  RecyclerView.Adapter<CartViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, final int position) {
-//        TextDrawable drawable = TextDrawable.builder().buildRound("" + listData.get(position).getQuantity(), Color.RED);
-//        holder.img_cart_count.setImageDrawable(drawable);
+
+        Picasso.with(cart.getBaseContext())
+                .load(listData.get(position).getImage())
+                .resize(70,70)
+                .centerCrop()
+                .into(holder.cart_image);
 
         holder.btn_quantity.setNumber(listData.get(position).getQuantity());
 
