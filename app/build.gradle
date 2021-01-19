@@ -81,5 +81,8 @@ dependencies {
     //Part 32
     implementation 'com.github.andremion:counterfab:1.0.1'
 
+    //Paypal
+    implementation 'com.paypal.sdk:paypal-android-sdk:2.15.3'
+
 }
 apply plugin : 'com.google.gms.google-services'
