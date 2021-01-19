@@ -24,6 +24,7 @@ import com.finaltest.orderfood.Common.Common;
 import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Interface.ItemClickListener;
 import com.finaltest.orderfood.Model.Food;
+import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.ViewHolder.FoodViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
@@ -193,6 +194,14 @@ public class FoodList extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Fix click back on FoodDetail and get no itm in FoodList
+        if(adapter!=null)
+            adapter.startListening();
+    }
+
     private void startSearch(CharSequence text) {
         searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
                 Food.class, R.layout.food_item,
@@ -245,6 +254,22 @@ public class FoodList extends AppCompatActivity {
                 foodViewHolder.food_name.setText(food.getName());
                 foodViewHolder.food_price.setText(String.format("$ %s",food.getPrice().toString()));
                 Picasso.with(getBaseContext()).load(food.getImage()).into(foodViewHolder.food_image);
+
+                //Quick cart
+                foodViewHolder.quick_cart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new Database(getBaseContext()).addToCart(new Order(
+                                adapter.getRef(position).getKey(),
+                                food.getName(),
+                                "1",
+                                food.getPrice(),
+                                food.getDiscount()
+                        ));
+
+                        Toast.makeText(FoodList.this, "Added to Cart", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
                 //Add favorites
                 if (localDB.isFavorites(adapter.getRef(position).getKey())){

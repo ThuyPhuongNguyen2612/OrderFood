@@ -28,7 +28,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.andremion.counterfab.CounterFab;
 import com.finaltest.orderfood.Common.Common;
+import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Interface.ItemClickListener;
 import com.finaltest.orderfood.Model.Category;
 import com.finaltest.orderfood.Service.ListenOrder;
@@ -64,6 +66,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     RecyclerView recycler_menu;
     RecyclerView.LayoutManager layoutManager;
 
+    CounterFab fab;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -91,7 +95,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         Paper.init(this);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (CounterFab) findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -100,6 +104,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
                 }
             });
+
+            fab.setCount(new Database(this).getCountCart());
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -164,6 +171,17 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
 
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fab.setCount(new Database(this).getCountCart());
+        //Fix click back button form Food and don't see category
+        if(adapter!=null)
+            adapter.startListening();
+    }
+
+
 
     @Override
     public void onBackPressed() {

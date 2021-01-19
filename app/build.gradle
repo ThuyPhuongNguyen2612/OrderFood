@@ -78,5 +78,8 @@ dependencies {
     //Part 29
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
 
+    //Part 32
+    implementation 'com.github.andremion:counterfab:1.0.1'
+
 }
 apply plugin : 'com.google.gms.google-services'
