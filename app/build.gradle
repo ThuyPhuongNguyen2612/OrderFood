@@ -75,5 +75,8 @@ dependencies {
     //Part 26
     implementation 'com.facebook.android:facebook-share:[4,5)'
 
+    //Part 29
+    implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
+
 }
 apply plugin : 'com.google.gms.google-services'

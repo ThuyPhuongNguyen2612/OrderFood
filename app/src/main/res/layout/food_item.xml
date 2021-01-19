@@ -3,11 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    app:cardElevation="4dp"
+    android:layout_height="wrap_content"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="0dp"
     android:layout_marginBottom="8dp">
 
-    <RelativeLayout
+    <LinearLayout
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:weightSum="5"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -16,22 +20,23 @@
             android:scaleType="centerCrop"
             android:src="@drawable/background"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="0dp"
+            android:layout_weight="4"/>
         
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:weightSum="10"
-            android:layout_alignParentBottom="true"
-            android:background="#4f0e0d0e">
+            >
 
             <TextView
+                android:layout_margin="10dp"
                 android:id="@+id/food_name"
                 android:text="Name of Food"
-                android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:gravity="center"
                 android:layout_width="0dp"
                 android:layout_weight="8"
                 android:layout_height="wrap_content"/>
@@ -39,7 +44,7 @@
             <ImageView
                 android:id="@+id/btnShare"
                 android:src="@drawable/ic_baseline_share_24"
-                app:tint="@android:color/white"
+                app:tint="@color/colorAccent"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
@@ -47,13 +52,20 @@
             <ImageView
                 android:id="@+id/fav"
                 android:src="@drawable/ic_baseline_favorite_border_24"
-                app:tint="@android:color/white"
+                app:tint="@color/colorAccent"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
+        <TextView
+            android:layout_margin="10dp"
+            android:id="@+id/food_price"
+            android:text="$100"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
