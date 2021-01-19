@@ -164,11 +164,12 @@ public class Cart extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == PAYPAL_REQUEST_CODE){
-            if (requestCode == RESULT_OK){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PAYPAL_REQUEST_CODE) {
+            if (requestCode == RESULT_OK) {
                 PaymentConfirmation confirmation = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
-                if (confirmation != null){
-                    try{
+                if (confirmation != null) {
+                    try {
                         String paymentDetail = confirmation.toJSONObject().toString(4);
                         JSONObject jsonObject = new JSONObject(paymentDetail);
 
@@ -177,7 +178,7 @@ public class Cart extends AppCompatActivity {
                                 Common.currentUser.getPhone(),
                                 Common.currentUser.getName(),
                                 address,
-                                txtTotalPrice.getText().toString(),"0",
+                                txtTotalPrice.getText().toString(), "0",
                                 comment,
                                 jsonObject.getJSONObject("response").getString("state"), //State from JSON
                                 cart);
@@ -195,10 +196,10 @@ public class Cart extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-            } else if (resultCode == Activity.RESULT_CANCELED){
-                Toast.makeText(this,"Payment cancel", Toast.LENGTH_SHORT).show();
-            } else if (requestCode == PaymentActivity.RESULT_EXTRAS_INVALID){
-                Toast.makeText(this,"Invalid payment", Toast.LENGTH_SHORT).show();
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(this, "Payment cancel", Toast.LENGTH_SHORT).show();
+            } else if (requestCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+                Toast.makeText(this, "Invalid payment", Toast.LENGTH_SHORT).show();
             }
         }
     }
