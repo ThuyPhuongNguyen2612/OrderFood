@@ -18,7 +18,7 @@
         android:layout_alignParentBottom="true"
         app:cardBackgroundColor="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="110dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -58,7 +58,9 @@
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                />
 
         </RelativeLayout>
 
