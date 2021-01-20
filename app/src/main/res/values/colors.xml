@@ -9,4 +9,6 @@
 
     <color name="overlayBackground">#7f333639</color>
     <color name="overlayAction">#0e0d0e</color>
+    
+    <color name="bgRowBackground">#FA315B</color>
 </resources>
