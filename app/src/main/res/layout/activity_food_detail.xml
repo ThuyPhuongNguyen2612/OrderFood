@@ -170,6 +170,19 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <Button
+                android:background="@drawable/button_style_sign_up"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="Show Comment"
+                android:textColor="@android:color/white"
+                android:id="@+id/btnShowComment"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

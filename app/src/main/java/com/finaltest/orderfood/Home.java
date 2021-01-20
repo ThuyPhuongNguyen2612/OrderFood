@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -36,6 +37,7 @@ import com.finaltest.orderfood.Model.Category;
 import com.finaltest.orderfood.Service.ListenOrder;
 import com.finaltest.orderfood.ViewHolder.MenuViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +63,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     FirebaseDatabase database;
     DatabaseReference category;
     FirebaseRecyclerAdapter<Category,MenuViewHolder> adapter;
+
+    SwipeRefreshLayout swipeRefreshLayout;
+
     TextView txtFullName;
 
     RecyclerView recycler_menu;
@@ -87,6 +92,39 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
+
+        //View
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Common.isConnectedToInternet(getBaseContext())) {
+                    loadMenu();
+                } else {
+                    Toast.makeText(getBaseContext(), "Please check your connection !!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+            }
+        });
+
+        //Default, load for first time
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (Common.isConnectedToInternet(getBaseContext())) {
+                    loadMenu();
+                } else {
+                    Toast.makeText(getBaseContext(), "Please check your connection !!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
 
         //Init Firebase
         database = FirebaseDatabase.getInstance();
@@ -129,12 +167,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         recycler_menu.setLayoutAnimation(controller);
 
 
-        if (Common.isConnectedToInternet(this)) {
-            loadMenu();
-        } else {
-            Toast.makeText(this, "Please check your connection !!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
 
         //Register Service
         Intent service = new Intent(Home.this, ListenOrder.class);
@@ -145,9 +178,14 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     }
 
     private void loadMenu() {
-        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(Category.class,R.layout.menu_item, MenuViewHolder.class,category) {
+
+        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(category,Category.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
             @Override
-            protected void populateViewHolder(MenuViewHolder menuViewHolder, Category category, int i) {
+            protected void onBindViewHolder(@NonNull MenuViewHolder menuViewHolder, int i, @NonNull Category category) {
                 menuViewHolder.txtMenuName.setText(category.getName());
                 Picasso.with(getBaseContext()).load(category.getImage()).into(menuViewHolder.imageView);
                 final Category clickItem = category;
@@ -162,14 +200,31 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     }
                 });
             }
+
+            @NonNull
+            @Override
+            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.menu_item,parent,false);
+                return new MenuViewHolder(itemView);
+            }
         };
+        adapter.startListening();
         recycler_menu.setAdapter(adapter);
+        swipeRefreshLayout.setRefreshing(false);
 
         //Animation
         recycler_menu.getAdapter().notifyDataSetChanged();
         recycler_menu.scheduleLayoutAnimation();
 
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(adapter!=null)
+            adapter.stopListening();
     }
 
     @Override

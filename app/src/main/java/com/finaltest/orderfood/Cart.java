@@ -141,10 +141,15 @@ public class Cart extends AppCompatActivity {
                 comment = edtComment.getText().toString();
 
                 String formatAmount = txtTotalPrice.getText().toString()
-                        .replace("\\$","")
+                        .replace("$","")
                         .replace(",","");
 
-                PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(formatAmount),"USD", "Order Food", PayPalPayment.PAYMENT_INTENT_SALE);
+
+
+                PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(formatAmount),
+                        "USD",
+                        "Order Food",
+                        PayPalPayment.PAYMENT_INTENT_SALE);
                 Intent intent = new Intent(getApplicationContext(), PaymentActivity.class);
                 intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
                 intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);

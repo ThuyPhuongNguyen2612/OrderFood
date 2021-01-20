@@ -53,7 +53,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation "androidx.drawerlayout:drawerlayout:1.0.0"
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.firebaseui:firebase-ui-database:2.1.0'
+    implementation 'com.firebaseui:firebase-ui-database:3.1.2'
     //Part 4
     implementation 'com.cepheuen.elegant-number-button:lib:1.0.2'
     //Part 5
