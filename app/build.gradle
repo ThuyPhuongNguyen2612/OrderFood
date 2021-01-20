@@ -84,5 +84,9 @@ dependencies {
     //Paypal
     implementation 'com.paypal.sdk:paypal-android-sdk:2.15.3'
 
+    //Part 41
+    implementation 'com.nineoldandroids:library:2.4.0'
+    implementation 'com.daimajia.slider:library:1.1.5@aar'
+
 }
 apply plugin : 'com.google.gms.google-services'

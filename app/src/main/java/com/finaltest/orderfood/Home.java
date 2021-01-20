@@ -30,9 +30,14 @@ import android.widget.Toast;
 
 
 import com.andremion.counterfab.CounterFab;
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.finaltest.orderfood.Common.Common;
 import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Interface.ItemClickListener;
+import com.finaltest.orderfood.Model.Banner;
 import com.finaltest.orderfood.Model.Category;
 import com.finaltest.orderfood.Service.ListenOrder;
 import com.finaltest.orderfood.ViewHolder.MenuViewHolder;
@@ -44,8 +49,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.Picasso;
 
@@ -73,6 +81,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     CounterFab fab;
 
+    //Slide
+    HashMap<String,String> image_list;
+    SliderLayout mSlider;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -89,6 +101,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 .build());
 
         setContentView(R.layout.activity_home);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
@@ -173,7 +187,72 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         Intent service = new Intent(Home.this, ListenOrder.class);
         startService(service);
 
+        //Setup Slider
+        //Need call this function after you init database firebase
+        setupSlider();
 
+
+    }
+
+    private void setupSlider() {
+        mSlider = (SliderLayout) findViewById(R.id.slider);
+        image_list = new HashMap<>();
+
+        final DatabaseReference banners = database.getReference("Banner");
+
+        banners.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot postSnapShot:snapshot.getChildren())
+                {
+                    Banner banner = postSnapShot.getValue(Banner.class);
+                    //We will concat string and id like
+                    //PIZZA_01 => And we will use PIZZA for show description, 01 for food id to click
+                    image_list.put(banner.getName()+ "@@@" + banner.getId(),banner.getImage());
+                }
+                for(String key:image_list.keySet())
+                {
+                    String[] keySplit = key.split("@@@");
+                    String nameOfFood = keySplit[0];
+                    String idOfFood = keySplit[1];
+
+                    //Create Slider
+                    final TextSliderView textSliderView = new TextSliderView(getBaseContext());
+                    textSliderView.description(nameOfFood)
+                            .image(image_list.get(key))
+                            .setScaleType(BaseSliderView.ScaleType.Fit)
+                            .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
+                                @Override
+                                public void onSliderClick(BaseSliderView slider) {
+                                    Intent intent = new Intent(Home.this,FoodDetail.class);
+                                    //We will send food id to FoodDetail
+                                    intent.putExtras(textSliderView.getBundle());
+                                    startActivity(intent);
+
+                                }
+                            });
+
+                    //Add extra bundle
+                    textSliderView.bundle(new Bundle());
+                    textSliderView.getBundle().putString("FoodId",idOfFood);
+
+                    mSlider.addSlider(textSliderView);
+
+                    //Remove event after finish
+                    banners.removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        mSlider.setPresetTransformer(SliderLayout.Transformer.Background2Foreground);
+        mSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mSlider.setCustomAnimation(new DescriptionAnimation());
+        mSlider.setDuration(4000);
 
     }
 
@@ -225,6 +304,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         super.onStop();
         if(adapter!=null)
             adapter.stopListening();
+        mSlider.stopAutoCycle();
     }
 
     @Override
