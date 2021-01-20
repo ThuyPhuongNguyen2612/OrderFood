@@ -8,6 +8,8 @@ import com.finaltest.orderfood.Model.User;
 
 public class Common {
     public static User currentUser;
+
+    public static final String INTENT_FOOD_ID = "FoodId";
     public static String convertCodeToStatus(String status) {
         if(status.equals("0"))
             return "Placed";

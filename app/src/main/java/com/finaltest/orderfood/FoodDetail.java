@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -19,6 +20,8 @@ import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Model.Food;
 import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.Model.Rating;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -55,6 +58,8 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
     DatabaseReference foods;
     DatabaseReference ratingTbl;
 
+    Button btnShowComment;
+
     Food currentFood;
 
     @Override
@@ -71,6 +76,16 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 .setFontAttrId(R.attr.fontPath)
                 .build());
         setContentView(R.layout.activity_food_detail);
+
+        btnShowComment = (Button) findViewById(R.id.btnShowComment);
+        btnShowComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(FoodDetail.this,ShowComment.class);
+                intent.putExtra(Common.INTENT_FOOD_ID,foodId);
+                startActivity(intent);
+            }
+        });
 
         //Firebase
         database = FirebaseDatabase.getInstance();
@@ -211,7 +226,19 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
                 foodId,
                 String.valueOf(i),
                 comments);
-        ratingTbl.child(Common.currentUser.getPhone()).addValueEventListener(new ValueEventListener() {
+
+        //Fix user can rate multiple times
+        ratingTbl.push()
+                .setValue(rating)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(FoodDetail.this, "Thank you for submit rating !!!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+
+        /*ratingTbl.child(Common.currentUser.getPhone()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.child(Common.currentUser.getPhone()).exists())
@@ -232,6 +259,6 @@ public class FoodDetail extends AppCompatActivity implements RatingDialogListene
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        }); */
     }
 }

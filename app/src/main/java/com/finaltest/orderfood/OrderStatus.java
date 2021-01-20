@@ -1,18 +1,26 @@
 package com.finaltest.orderfood;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.finaltest.orderfood.Common.Common;
+import com.finaltest.orderfood.Model.Food;
 import com.finaltest.orderfood.Model.Request;
+import com.finaltest.orderfood.ViewHolder.FoodViewHolder;
 import com.finaltest.orderfood.ViewHolder.OrderViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -63,21 +71,39 @@ public class OrderStatus extends AppCompatActivity {
     }
 
     private void loadOrders(final String phone) {
-        adapter = new FirebaseRecyclerAdapter<Request, OrderViewHolder>(
-                Request.class,
-                R.layout.order_layout,
-                OrderViewHolder.class,
-                requests.orderByChild("phone").equalTo(phone)) {
+        Query getOrderByUser = requests.orderByChild("phone").equalTo(phone);
+
+        FirebaseRecyclerOptions<Request> orderOptions = new FirebaseRecyclerOptions.Builder<Request>()
+                .setQuery(getOrderByUser,Request.class)
+                .build();
+
+        adapter = new FirebaseRecyclerAdapter<Request, OrderViewHolder>(orderOptions) {
             @Override
-            protected void populateViewHolder(OrderViewHolder orderViewHolder, Request request, int i) {
+            protected void onBindViewHolder(@NonNull OrderViewHolder orderViewHolder, int i, @NonNull Request request) {
                 orderViewHolder.txtOrderId.setText(adapter.getRef(i).getKey());
                 orderViewHolder.txtOrderStatus.setText(Common.convertCodeToStatus(request.getStatus()));
                 orderViewHolder.txtOrderAddress.setText(request.getAddress());
                 orderViewHolder.txtOrderPhone.setText(request.getPhone());
             }
+
+            @NonNull
+            @Override
+            public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.order_layout,parent,false);
+                return new OrderViewHolder(itemView);
+            }
         };
+        adapter.startListening();
+
         recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(adapter!=null)
+            adapter.stopListening();
 
+    }
 }

@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,9 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -27,10 +30,12 @@ import com.finaltest.orderfood.Model.Food;
 import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.ViewHolder.FoodViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.squareup.picasso.Picasso;
@@ -65,6 +70,8 @@ public class FoodList extends AppCompatActivity {
     //Facebook Share
     CallbackManager callbackManager;
     ShareDialog shareDialog;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     //Create Target from Picasso
     Target target = new Target() {
@@ -121,22 +128,51 @@ public class FoodList extends AppCompatActivity {
         //Local DB
         localDB = new Database(this);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                //Get Intent here
+                if(getIntent()!=null)
+                    categoryID=getIntent().getStringExtra("CategoryID");
+                if(!categoryID.isEmpty() && categoryID!=null) {
+                    if (Common.isConnectedToInternet(getBaseContext())) {
+                        loadListFood(categoryID);
+                    } else {
+                        Toast.makeText(FoodList.this, "Please check your connection !!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
+        });
+
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                //Get Intent here
+                if(getIntent()!=null)
+                    categoryID=getIntent().getStringExtra("CategoryID");
+                if(!categoryID.isEmpty() && categoryID!=null) {
+                    if (Common.isConnectedToInternet(getBaseContext())) {
+                        loadListFood(categoryID);
+                    } else {
+                        Toast.makeText(FoodList.this, "Please check your connection !!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+            }
+        });
+
         recyclerView = (RecyclerView) findViewById(R.id.recycler_food);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        //Get Intent here
-        if(getIntent()!=null)
-            categoryID=getIntent().getStringExtra("CategoryID");
-        if(!categoryID.isEmpty() && categoryID!=null) {
-            if (Common.isConnectedToInternet(getBaseContext())) {
-                loadListFood(categoryID);
-            } else {
-                Toast.makeText(FoodList.this, "Please check your connection !!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
+
         //Search
         materialSearchBar = (MaterialSearchBar) findViewById(R.id.searchBar);
         materialSearchBar.setHint("Enter your food");
@@ -203,13 +239,17 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void startSearch(CharSequence text) {
-        searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(
-                Food.class, R.layout.food_item,
-                FoodViewHolder.class,
-                foodList.orderByChild("name").equalTo(text.toString()) //Compare name
-        ) {
+
+        //Create query by name
+        Query searchByName = foodList.orderByChild("name").equalTo(text.toString());
+        //Create Option with query
+        FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(searchByName,Food.class)
+                .build();
+
+        searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(foodOptions) {
             @Override
-            protected void populateViewHolder(FoodViewHolder foodViewHolder, Food food, int i) {
+            protected void onBindViewHolder(@NonNull FoodViewHolder foodViewHolder, int i, @NonNull Food food) {
                 foodViewHolder.food_name.setText(food.getName());
                 Picasso.with(getBaseContext()).load(food.getImage()).into(foodViewHolder.food_image);
 
@@ -224,7 +264,16 @@ public class FoodList extends AppCompatActivity {
                     }
                 });
             }
+
+            @NonNull
+            @Override
+            public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.food_item,parent,false);
+                return new FoodViewHolder(itemView);
+            }
         };
+        searchAdapter.startListening();
         recyclerView.setAdapter(searchAdapter);//Set adapter for Recycler View is Search result
     }
 
@@ -246,11 +295,18 @@ public class FoodList extends AppCompatActivity {
     }
 
     private void loadListFood(String categoryID) {
+
+        //Create query by category Id
+        Query searchByMenuID = foodList.orderByChild("menuID").equalTo(categoryID.toString());
+        //Create Option with query
+        FirebaseRecyclerOptions<Food> foodOptions = new FirebaseRecyclerOptions.Builder<Food>()
+                .setQuery(searchByMenuID,Food.class)
+                .build();
+
         //Like: Select * from Food where MenuID =
-        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(Food.class, R.layout.food_item,FoodViewHolder.class,
-                foodList.orderByChild("menuID").equalTo(categoryID)) {
+        adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(foodOptions) {
             @Override
-            protected void populateViewHolder(final FoodViewHolder foodViewHolder, final Food food, final int position) {
+            protected void onBindViewHolder(@NonNull final FoodViewHolder foodViewHolder, final int position, @NonNull final Food food) {
                 foodViewHolder.food_name.setText(food.getName());
                 foodViewHolder.food_price.setText(String.format("$ %s",food.getPrice().toString()));
                 Picasso.with(getBaseContext()).load(food.getImage()).into(foodViewHolder.food_image);
@@ -314,9 +370,31 @@ public class FoodList extends AppCompatActivity {
                     }
                 });
             }
+
+
+            @NonNull
+            @Override
+            public FoodViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.food_item,parent,false);
+                return new FoodViewHolder(itemView);
+            }
         };
+        adapter.startListening();
         //Set Adapter
         Log.d("TAG",""+adapter.getItemCount());
         recyclerView.setAdapter(adapter);
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(adapter!=null)
+            adapter.stopListening();
+        if(searchAdapter!=null)
+            searchAdapter.stopListening();
+
     }
 }
