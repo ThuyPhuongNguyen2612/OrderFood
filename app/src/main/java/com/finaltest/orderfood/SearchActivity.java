@@ -21,6 +21,7 @@ import com.facebook.CallbackManager;
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
+import com.finaltest.orderfood.Common.Common;
 import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Interface.ItemClickListener;
 import com.finaltest.orderfood.Model.Food;
@@ -204,7 +205,7 @@ public class SearchActivity extends AppCompatActivity {
                 });
 
                 //Add favorites
-                if (localDB.isFavorites(adapter.getRef(position).getKey())){
+                if (localDB.isFavorites(adapter.getRef(position).getKey(), Common.currentUser.getPhone())){
                     foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_24);
                 }
 
@@ -222,12 +223,12 @@ public class SearchActivity extends AppCompatActivity {
                 foodViewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!localDB.isFavorites(adapter.getRef(position).getKey())){
-                            localDB.addToFavorites(adapter.getRef(position).getKey());
+                        if (!localDB.isFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone())){
+                            localDB.addToFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                             foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_24);
                             Toast.makeText(SearchActivity.this, ""+food.getName()+" was added to Favorites", Toast.LENGTH_SHORT).show();
                         } else {
-                            localDB.removeFromFavorites(adapter.getRef(position).getKey());
+                            localDB.removeFromFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                             foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                             Toast.makeText(SearchActivity.this, ""+food.getName()+" was removed from Favorites", Toast.LENGTH_SHORT).show();
                         }

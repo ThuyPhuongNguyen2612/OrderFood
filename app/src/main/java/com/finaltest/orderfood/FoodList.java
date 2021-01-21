@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.stepstone.apprating.C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -329,7 +330,7 @@ public class FoodList extends AppCompatActivity {
                 });
 
                 //Add favorites
-                if (localDB.isFavorites(adapter.getRef(position).getKey())){
+                if (localDB.isFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone())){
                     foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_24);
                 }
 
@@ -347,12 +348,12 @@ public class FoodList extends AppCompatActivity {
                 foodViewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!localDB.isFavorites(adapter.getRef(position).getKey())){
-                            localDB.addToFavorites(adapter.getRef(position).getKey());
+                        if (!localDB.isFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone())){
+                            localDB.addToFavorites(adapter.getRef(position).getKey(), Common.currentUser.getPhone());
                             foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_24);
                             Toast.makeText(FoodList.this, ""+food.getName()+" was added to Favorites", Toast.LENGTH_SHORT).show();
                         } else {
-                            localDB.removeFromFavorites(adapter.getRef(position).getKey());
+                            localDB.removeFromFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
                             foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_border_24);
                             Toast.makeText(FoodList.this, ""+food.getName()+" was removed from Favorites", Toast.LENGTH_SHORT).show();
                         }
