@@ -157,7 +157,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 }
             });
 
-            fab.setCount(new Database(this).getCountCart());
+            fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -310,7 +310,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
     @Override
     protected void onResume() {
         super.onResume();
-        fab.setCount(new Database(this).getCountCart());
+        fab.setCount(new Database(this).getCountCart(Common.currentUser.getPhone()));
         //Fix click back button form Food and don't see category
         if(adapter!=null)
             adapter.startListening();
