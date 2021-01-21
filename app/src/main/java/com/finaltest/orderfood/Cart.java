@@ -253,6 +253,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
         //We will remove item at List<Order> by position
         cart.remove(position);
         //After that , we will delete all old data from SQLite
+        //Update here
         new Database(this).cleanCart(Common.currentUser.getPhone());
         //And final ,  we will update new data from List<Order> to SQLite
         for (Order item: cart){
