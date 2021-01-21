@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
 import android.database.sqlite.SQLiteQueryBuilder;
 
+import com.finaltest.orderfood.Model.Favorites;
 import com.finaltest.orderfood.Model.Order;
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
@@ -106,10 +107,25 @@ public class Database extends SQLiteAssetHelper {
         db.execSQL(query);
     }
 
-    //Favorites
-    public void addToFavorites(String foodId,String userPhone){
+    public void removeFromCart(String productId, String phone) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format("INSERT INTO Favorites(FoodId,UserPhone) VALUES('%s','%s');",foodId,userPhone);
+        String query = String.format("DELETE FROM OrderDetail WHERE UserPhone='%s' AND ProductId='%s'",phone,productId);
+        db.execSQL(query);
+    }
+
+    //Favorites
+    public void addToFavorites(Favorites food){
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format("INSERT INTO Favorites(FoodId,FoodName,FoodPrice,FoodMenuId,FoodImage,FoodDiscount,FoodDescription,UserPhone)"+
+                " VALUES('%s','%s','%s','%s','%s','%s','%s','%s');",
+                food.getFoodId(),
+                food.getFoodName(),
+                food.getFoodPrice(),
+                food.getFoodMenuId(),
+                food.getFoodImage(),
+                food.getFoodDiscount(),
+                food.getFoodDescription(),
+                food.getUserPhone());
         db.execSQL(query);
     }
 
@@ -131,10 +147,31 @@ public class Database extends SQLiteAssetHelper {
         return true;
     }
 
-
-    public void removeFromCart(String productId, String phone) {
+    public List<Favorites> getAllFavorites(String userPhone) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format("DELETE FROM OrderDetail WHERE UserPhone='%s' AND ProductId='%s'",phone,productId);
-        db.execSQL(query);
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        String[] sqlSelect = {"UserPhone","FoodId","FoodName","FoodPrice","FoodMenuId","FoodImage","FoodDiscount","FoodDescription"};
+        String sqlTable ="Favorites";
+
+        qb.setTables(sqlTable);
+        Cursor c = qb.query(db, sqlSelect,"UserPhone=?",new String[]{userPhone},null,null,null);
+
+        final List<Favorites> result = new ArrayList<>();
+        if(c.moveToFirst()) {
+            do{
+                result.add(new Favorites(
+                        c.getString(c.getColumnIndex("FoodId")),
+                        c.getString(c.getColumnIndex("FoodName")),
+                        c.getString(c.getColumnIndex("FoodPrice")),
+                        c.getString(c.getColumnIndex("FoodMenuId")),
+                        c.getString(c.getColumnIndex("FoodImage")),
+                        c.getString(c.getColumnIndex("FoodDiscount")),
+                        c.getString(c.getColumnIndex("FoodDescription")),
+                        c.getString(c.getColumnIndex("UserPhone"))));
+            }while (c.moveToNext());
+        }
+        return result;
     }
+
 }

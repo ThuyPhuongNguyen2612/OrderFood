@@ -24,6 +24,7 @@ import com.facebook.share.widget.ShareDialog;
 import com.finaltest.orderfood.Common.Common;
 import com.finaltest.orderfood.Database.Database;
 import com.finaltest.orderfood.Interface.ItemClickListener;
+import com.finaltest.orderfood.Model.Favorites;
 import com.finaltest.orderfood.Model.Food;
 import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.ViewHolder.FoodViewHolder;
@@ -224,8 +225,18 @@ public class SearchActivity extends AppCompatActivity {
                 foodViewHolder.fav_image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Favorites favorites = new Favorites();
+                        favorites.setFoodId(adapter.getRef(position).getKey());
+                        favorites.setFoodName(food.getName());
+                        favorites.setFoodDescription(food.getDescription());
+                        favorites.setFoodDiscount(food.getDiscount());
+                        favorites.setFoodImage(food.getImage());
+                        favorites.setFoodMenuId(food.getMenuID());
+                        favorites.setUserPhone(Common.currentUser.getPhone());
+                        favorites.setFoodPrice(food.getPrice());
+
                         if (!localDB.isFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone())){
-                            localDB.addToFavorites(adapter.getRef(position).getKey(),Common.currentUser.getPhone());
+                            localDB.addToFavorites(favorites);
                             foodViewHolder.fav_image.setImageResource(R.drawable.ic_baseline_favorite_24);
                             Toast.makeText(SearchActivity.this, ""+food.getName()+" was added to Favorites", Toast.LENGTH_SHORT).show();
                         } else {
