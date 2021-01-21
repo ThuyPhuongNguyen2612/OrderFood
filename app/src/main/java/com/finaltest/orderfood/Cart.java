@@ -12,11 +12,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.Model.Request;
 import com.finaltest.orderfood.ViewHolder.CartAdapter;
 import com.finaltest.orderfood.ViewHolder.CartViewHolder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -74,6 +77,8 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
             .clientId(Config.PAYPAL_CLIENT_ID);
     String address,comment;
 
+    RelativeLayout rootLayout;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
@@ -95,6 +100,8 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
         .build());
 
         setContentView(R.layout.activity_cart);
+
+        rootLayout = (RelativeLayout) findViewById(R.id.rootLayout);
 
         //Firebase
         database = FirebaseDatabase.getInstance();
@@ -200,7 +207,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
                         //We will using System.CurrentMilli to key
                         requests.child(String.valueOf(System.currentTimeMillis())).setValue(request);
                         //Delete cart
-                        new Database(getBaseContext()).cleanCart();
+                        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
                         Toast.makeText(Cart.this, "Thank you, Order Place", Toast.LENGTH_SHORT).show();
                         finish();
@@ -218,7 +225,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
     }
 
     private void loadListFood() {
-        cart = new Database(this).getCarts();
+        cart = new Database(this).getCarts(Common.currentUser.getPhone());
         adapter = new CartAdapter(cart,this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
@@ -246,7 +253,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
         //We will remove item at List<Order> by position
         cart.remove(position);
         //After that , we will delete all old data from SQLite
-        new Database(this).cleanCart();
+        new Database(this).cleanCart(Common.currentUser.getPhone());
         //And final ,  we will update new data from List<Order> to SQLite
         for (Order item: cart){
             new Database(this).addToCart(item);
@@ -258,23 +265,45 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
         if (viewHolder instanceof CartViewHolder){
-            int deleteIndex = viewHolder.getAdapterPosition();
+            final int deleteIndex = viewHolder.getAdapterPosition();
             String name = ((CartAdapter)recyclerView.getAdapter()).getItem(deleteIndex).getProductName();
-            Order deleteItem =((CartAdapter)recyclerView.getAdapter()).getItem(deleteIndex);
+            final Order deleteItem =((CartAdapter)recyclerView.getAdapter()).getItem(deleteIndex);
 
             adapter.removeItem(deleteIndex);
-            new Database(getBaseContext()).removeFromFavorites(deleteItem.getProductId(), Common.currentUser.getPhone());
+            new Database(getBaseContext()).removeFromCart(deleteItem.getProductId(), Common.currentUser.getPhone());
 
             //Update txtTotal
             //Calculate total price
-//            int total = 0;
-//            List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
-//            for(Order item:orders)
-//                total+=(Integer.parseInt(deleteItem.getPrice()))*(Integer.parseInt(item.getQuantity()));
-//            Locale locale = new Locale("en","US");
-//            NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
-//
-//            txtTotalPrice.setText(fmt.format(total));
+            int total = 0;
+            List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+            for(Order item:orders)
+                total+=(Integer.parseInt(item.getPrice()))*(Integer.parseInt(item.getQuantity()));
+            Locale locale = new Locale("en","US");
+            NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+            txtTotalPrice.setText(fmt.format(total));
+
+            //Make Snackbar
+            Snackbar snackbar = Snackbar.make(rootLayout,name +" removed from cart!",Snackbar.LENGTH_LONG);
+            snackbar.setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    adapter.restoreItem(deleteItem,deleteIndex);
+                    new Database(getBaseContext()).addToCart(deleteItem);
+                    //Update txtTotal
+                    //Calculate total price
+                    int total = 0;
+                    List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+                    for(Order item:orders)
+                        total+=(Integer.parseInt(item.getPrice()))*(Integer.parseInt(item.getQuantity()));
+                    Locale locale = new Locale("en","US");
+                    NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+
+                    txtTotalPrice.setText(fmt.format(total));
+                }
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();
         }
     }
 }

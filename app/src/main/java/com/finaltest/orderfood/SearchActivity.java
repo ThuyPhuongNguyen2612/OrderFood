@@ -192,6 +192,7 @@ public class SearchActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         new Database(getBaseContext()).addToCart(new Order(
+                                Common.currentUser.getPhone(),
                                 adapter.getRef(position).getKey(),
                                 food.getName(),
                                 "1",
