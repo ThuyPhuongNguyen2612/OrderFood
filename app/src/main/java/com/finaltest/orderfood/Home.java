@@ -382,6 +382,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         }
         else if (id == R.id.nav_home_address){
             showHpmeAddressDialog();
+        }else if(id == R.id.nav_favorites) {
+            startActivity(new Intent(Home.this,FavoritesActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
