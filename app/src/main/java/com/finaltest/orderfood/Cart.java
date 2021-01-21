@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,9 +23,12 @@ import android.widget.Toast;
 import com.finaltest.orderfood.Common.Common;
 import com.finaltest.orderfood.Common.Config;
 import com.finaltest.orderfood.Database.Database;
+import com.finaltest.orderfood.Helper.RecyclerItemTouchHelper;
+import com.finaltest.orderfood.Interface.RecyclerItemTouchHelperListener;
 import com.finaltest.orderfood.Model.Order;
 import com.finaltest.orderfood.Model.Request;
 import com.finaltest.orderfood.ViewHolder.CartAdapter;
+import com.finaltest.orderfood.ViewHolder.CartViewHolder;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -33,6 +37,7 @@ import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.stepstone.apprating.C;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +51,7 @@ import java.util.Locale;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class Cart extends AppCompatActivity {
+public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperListener {
 
     private static final int PAYPAL_REQUEST_CODE = 9999;
     RecyclerView recyclerView;
@@ -101,6 +106,10 @@ public class Cart extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
+        //Swipe to delete
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
+
         txtTotalPrice = (TextView) findViewById(R.id.total);
         btnPlace = (Button) findViewById(R.id.btnPlaceOrder);
 
@@ -144,8 +153,6 @@ public class Cart extends AppCompatActivity {
                 String formatAmount = txtTotalPrice.getText().toString()
                         .replace("$","")
                         .replace(",","");
-
-
 
                 PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(formatAmount),
                         "USD",
@@ -246,5 +253,28 @@ public class Cart extends AppCompatActivity {
         }
         //Refresh
         loadListFood();
+    }
+
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof CartViewHolder){
+            int deleteIndex = viewHolder.getAdapterPosition();
+            String name = ((CartAdapter)recyclerView.getAdapter()).getItem(deleteIndex).getProductName();
+            Order deleteItem =((CartAdapter)recyclerView.getAdapter()).getItem(deleteIndex);
+
+            adapter.removeItem(deleteIndex);
+            new Database(getBaseContext()).removeFromFavorites(deleteItem.getProductId(), Common.currentUser.getPhone());
+
+            //Update txtTotal
+            //Calculate total price
+//            int total = 0;
+//            List<Order> orders = new Database(getBaseContext()).getCarts(Common.currentUser.getPhone());
+//            for(Order item:orders)
+//                total+=(Integer.parseInt(deleteItem.getPrice()))*(Integer.parseInt(item.getQuantity()));
+//            Locale locale = new Locale("en","US");
+//            NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
+//
+//            txtTotalPrice.setText(fmt.format(total));
+        }
     }
 }

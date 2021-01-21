@@ -26,7 +26,7 @@
                 app:met_baseColor="@color/colorPrimary"
                 app:met_floatingLabel="highlight"
                 app:met_primaryColor="@color/colorPrimary"
-                app:met_singleLineEllipsis="true"/>
+                app:met_singleLineEllipsis="true" />
 
             <com.rengwuxian.materialedittext.MaterialEditText
                 android:id="@+id/edtComment"
@@ -42,6 +42,9 @@
                 app:met_floatingLabel="highlight"
                 app:met_primaryColor="@color/colorPrimary"
                 app:met_singleLineEllipsis="true"/>
+            
+
+
 
         </LinearLayout>
 
