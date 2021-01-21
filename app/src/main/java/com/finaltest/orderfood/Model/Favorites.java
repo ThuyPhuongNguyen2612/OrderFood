@@ -1,19 +1,19 @@
 package com.finaltest.orderfood.Model;
 
 public class Favorites {
-    private String foodId, foodName, foodPrice, foodMenuId, foodImage, foodDiscount, foodDescruption, userPhone;
+    private String foodId, foodName, foodPrice, foodMenuId, foodImage, foodDiscount, foodDescription, userPhone;
 
     public Favorites() {
     }
 
-    public Favorites(String foodId, String foodName, String foodPrice, String foodMenuId, String foodImage, String foodDiscount, String foodDescruption, String userPhone) {
+    public Favorites(String foodId, String foodName, String foodPrice, String foodMenuId, String foodImage, String foodDiscount, String foodDescription, String userPhone) {
         this.foodId = foodId;
         this.foodName = foodName;
         this.foodPrice = foodPrice;
         this.foodMenuId = foodMenuId;
         this.foodImage = foodImage;
         this.foodDiscount = foodDiscount;
-        this.foodDescruption = foodDescruption;
+        this.foodDescription = foodDescription;
         this.userPhone = userPhone;
     }
 
@@ -65,12 +65,12 @@ public class Favorites {
         this.foodDiscount = foodDiscount;
     }
 
-    public String getFoodDescruption() {
-        return foodDescruption;
+    public String getFoodDescription() {
+        return foodDescription;
     }
 
-    public void setFoodDescruption(String foodDescruption) {
-        this.foodDescruption = foodDescruption;
+    public void setFoodDescription(String foodDescription) {
+        this.foodDescription = foodDescription;
     }
 
     public String getUserPhone() {

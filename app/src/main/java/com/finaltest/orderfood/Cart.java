@@ -197,7 +197,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
                     //We will using System.CurrentMilli to key
                     requests.child(String.valueOf(System.currentTimeMillis())).setValue(request);
                     //Delete cart
-                    new Database(getBaseContext()).cleanCart();
+                    new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
                     Toast.makeText(Cart.this, "Thank you, Order Place", Toast.LENGTH_SHORT).show();
                     finish();
@@ -243,7 +243,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
                         //We will using System.CurrentMilli to key
                         requests.child(String.valueOf(System.currentTimeMillis())).setValue(request);
                         //Delete cart
-                        new Database(getBaseContext()).cleanCart();
+                        new Database(getBaseContext()).cleanCart(Common.currentUser.getPhone());
 
                         Toast.makeText(Cart.this, "Thank you, Order Place", Toast.LENGTH_SHORT).show();
                         finish();
@@ -261,7 +261,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
     }
 
     private void loadListFood() {
-        cart = new Database(this).getCarts();
+        cart = new Database(this).getCarts(Common.currentUser.getPhone());
         adapter = new CartAdapter(cart,this);
         adapter.notifyDataSetChanged();
         recyclerView.setAdapter(adapter);
