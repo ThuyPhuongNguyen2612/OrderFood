@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -138,6 +139,13 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
         final MaterialEditText edtAddress = (MaterialEditText) order_address_comment.findViewById(R.id.edtAddress);
         final MaterialEditText edtComment = (MaterialEditText) order_address_comment.findViewById(R.id.edtComment);
 
+        //Radio
+        final RadioButton rdicop = (RadioButton) order_address_comment.findViewById(R.id.rdiCOD);
+        final RadioButton rdiPaypal = (RadioButton) order_address_comment.findViewById(R.id.rdiPaypal);
+
+        //Event radio
+
+
         alertDialog.setView(order_address_comment);
         alertDialog.setIcon(R.drawable.ic_baseline_shopping_cart_24);
         alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -150,18 +158,45 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
                 address = edtAddress.getText().toString();
                 comment = edtComment.getText().toString();
 
-                String formatAmount = txtTotalPrice.getText().toString()
-                        .replace("$","")
-                        .replace(",","");
+                //Check payment
+                if (!rdicop.isChecked() && !rdiPaypal.isChecked()){
+                    Toast.makeText(Cart.this, "Please select Payment option", Toast.LENGTH_SHORT).show();
+                } else if (rdiPaypal.isChecked()){
+                    String formatAmount = txtTotalPrice.getText().toString()
+                            .replace("$","")
+                            .replace(",","");
 
-                PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(formatAmount),
-                        "USD",
-                        "Order Food",
-                        PayPalPayment.PAYMENT_INTENT_SALE);
-                Intent intent = new Intent(getApplicationContext(), PaymentActivity.class);
-                intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-                intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
-                startActivityForResult(intent, PAYPAL_REQUEST_CODE);
+                    PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(formatAmount),
+                            "USD",
+                            "Order Food",
+                            PayPalPayment.PAYMENT_INTENT_SALE);
+                    Intent intent = new Intent(getApplicationContext(), PaymentActivity.class);
+                    intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+                    intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
+                    startActivityForResult(intent, PAYPAL_REQUEST_CODE);
+                } else if (rdicop.isChecked()){
+                    //Create new Request
+                    Request request = new Request(
+                            Common.currentUser.getPhone(),
+                            Common.currentUser.getName(),
+                            address,
+                            txtTotalPrice.getText().toString(), "0",
+                            comment,
+                            "COD",
+                            "Unpaid", 
+                            cart);
+
+                    //Submit to Firebase
+                    //We will using System.CurrentMilli to key
+                    requests.child(String.valueOf(System.currentTimeMillis())).setValue(request);
+                    //Delete cart
+                    new Database(getBaseContext()).cleanCart();
+
+                    Toast.makeText(Cart.this, "Thank you, Order Place", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+
+
 
             }
         });
@@ -193,6 +228,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
                                 address,
                                 txtTotalPrice.getText().toString(), "0",
                                 comment,
+                                "Paypal",
                                 jsonObject.getJSONObject("response").getString("state"), //State from JSON
                                 cart);
 
