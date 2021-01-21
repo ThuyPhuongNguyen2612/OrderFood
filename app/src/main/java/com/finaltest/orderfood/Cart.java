@@ -183,7 +183,7 @@ public class Cart extends AppCompatActivity implements RecyclerItemTouchHelperLi
                             txtTotalPrice.getText().toString(), "0",
                             comment,
                             "COD",
-                            "Unpaid", 
+                            "Unpaid",
                             cart);
 
                     //Submit to Firebase
