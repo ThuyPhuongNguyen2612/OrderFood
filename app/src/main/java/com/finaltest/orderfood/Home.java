@@ -337,6 +337,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.nav_search)
+            startActivity(new Intent(Home.this,SearchActivity.class));
+
         return super.onOptionsItemSelected(item);
     }
     @Override
